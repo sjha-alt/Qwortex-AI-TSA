@@ -4,11 +4,11 @@ import { Mail } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import { Button, Logo, PixelBot } from './components'
 
-export function AuthPage() {
+export function AuthPage({ message: initialMessage = '' }: { message?: string }) {
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(initialMessage)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 

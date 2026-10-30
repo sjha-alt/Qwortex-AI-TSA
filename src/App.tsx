@@ -24,7 +24,23 @@ export default function App() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
+  useEffect(() => {
+    const pendingPath = sessionStorage.getItem('qwortex-pending-path')
+    if (session && pendingPath) {
+      sessionStorage.removeItem('qwortex-pending-path')
+      window.history.replaceState({}, '', pendingPath)
+      setPath(pendingPath)
+    }
+  }, [session])
+
   const navigate = (next: string) => {
+    if (!session && next.startsWith('/module/')) {
+      sessionStorage.setItem('qwortex-pending-path', next)
+      setPath('/sign-in')
+      window.history.pushState({}, '', '/sign-in')
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     const [clean, hash] = next.split('#')
     if (window.location.protocol === 'file:') {
       window.history.pushState({}, '', `${window.location.pathname}#${clean}${hash ? `#${hash}` : ''}`)
@@ -37,15 +53,18 @@ export default function App() {
   }
 
   if (checking) return <div className="auth-loading"><PixelBot mood="working" /></div>
-  if (!session) return <AuthPage />
+  const publicPath = path === '/' || path === '/learn' || path === '/about'
+  if (!session && !publicPath) {
+    return <AuthPage message={path === '/sign-in' ? 'Create an account or sign in to enter the lab.' : undefined} />
+  }
 
   let content = <HomePage onNavigate={navigate} session={session} />
   if (path === '/learn') content = <LearnPage onNavigate={navigate} />
   else if (path === '/practice') content = <PracticePage onNavigate={navigate} />
   else if (path === '/build') content = <BuildPage onNavigate={navigate} />
   else if (path === '/community') content = <CommunityPage onNavigate={navigate} />
-  else if (path === '/dashboard') content = <DashboardPage onNavigate={navigate} session={session} />
-  else if (path === '/account') content = <AccountPage session={session} onNavigate={navigate} onSignOut={() => supabase?.auth.signOut()} />
+  else if (path === '/dashboard' && session) content = <DashboardPage onNavigate={navigate} session={session} />
+  else if (path === '/account' && session) content = <AccountPage session={session} onNavigate={navigate} onSignOut={() => supabase?.auth.signOut()} />
   else if (path === '/achievements') content = <AchievementsPage onNavigate={navigate} />
   else if (path === '/about') content = <AboutPage onNavigate={navigate} />
   else if (path.startsWith('/module/')) content = <ZonePage moduleId={path.split('/')[2] as ModuleId} onNavigate={navigate} />
