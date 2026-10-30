@@ -1,6 +1,6 @@
 # Qwortex — Retro AI Learning Portal
 
-Qwortex is a React + TypeScript portal shell for the TSA Webmaster artificial-intelligence learning-portal challenge. The current build focuses on a cohesive retro coding/game interface while the lesson content is still being planned.
+Qwortex is a React + TypeScript portal shell for the TSA Webmaster artificial-intelligence learning-portal challenge. The current build focuses on a cohesive retro coding/game interface inspired by codédex while the lesson content is still being planned. 
 
 ## Current experience
 
